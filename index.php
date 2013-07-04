@@ -77,25 +77,37 @@ echo($design);
 }
 else {
 
-$design= <<< EOH
+$header= <<< EOH
 <html>
 <head>
 <script type="text/javascript" src="./js/jquery.min.js"></script>
-<script type="text/javascript" src="./js/jquery.field.js"></script>
 <script type="text/javascript" src="./js/jquery.calculation.js"></script>
 <script type="text/javascript">
  function start()
  {
-$("td[value^='" + $("td[name=chat]").max() + "']").css("background-color","#C2FFCE");
-$("td[value^='" + $("td[name=ticket]").max() + "']").css("background-color","#C2FFCE");
-$("td[value^='" + $("td[name=phone]").max() + "']").css("background-color","#C2FFCE");
+$("td[value^='" + $("td[name=chat]").max() + "'];td[name=chat]").css("background-color","#C2FFCE");
+$("td[value^='" + $("td[name=ticket]").max() + "'];td[name=ticket]").css("background-color","#C2FFCE");
+$("td[value^='" + $("td[name=phone]").max() + "'];td[name=phone]").css("background-color","#C2FFCE");
+$("td[value^='0'];td[name=chat]").css("background-color","#FFD9D9");
+$("td[value^='0'];td[name=ticket]").css("background-color","#FFD9D9");
+$("td[value^='0'];td[name=phone]").css("background-color","#FFD9D9");
+$("td[name=chat]").sum("keyup", "#Echat");
+$("td[name=ticket]").sum("keyup", "#Eticket");
+$("td[name=phone]").sum("keyup", "#Ephone");
+
+
+EOH;
+# <?php
+
+$header2= <<< EOH
 }
 </script>
 
 </head>
 <body onload="start()">
-<table border="2" cellpadding="2" width="100%">
-<tr> <td width="20%" >user</td> <td>chat</td> <td>ticket</td> <td>phone</td> </tr>
+<table border="2" cellpadding="2">
+<tr> <td>user</td> <td>chat</td> <td>ticket</td> <td>phone</td><td>Σ</td></tr>
+
 EOH;
 # <?php
 
@@ -104,18 +116,24 @@ $chat=get_user_chat($user);
 $ticket=get_user_ticket($user);
 $phone=get_user_phone($user);
 
+$js.="$(\"td[id=".$user."]\").sum(\"keyup\", \"#totalSum".$user."\");\r\n";
+
 $design.="<tr><td>".get_user_info($user)."</td>";
-if ($chat==0)   {$design.="<td bgcolor=\"#FFD9D9\">".$chat."</td>";}else { $design.="<td name=\"chat\" value=\"".$chat."\">".$chat."</td>";}
-if ($ticket==0) {$design.="<td bgcolor=\"#FFD9D9\">".$ticket."</td>";}else {$design.="<td name=\"ticket\" value=\"".$ticket."\">".$ticket."</td>";}
-if ($phone==0)  {$design.="<td bgcolor=\"#FFD9D9\">".$phone."</td>";}else {$design.="<td name=\"phone\" value=\"".$phone."\">".$phone."</td>";}
+$design.="<td align=center id=\"".$user."\" name=\"chat\" value=\"".$chat."\" >".$chat."</td>";
+$design.="<td align=center  id=\"".$user."\" name=\"ticket\" value=\"".$ticket."\" >".$ticket."</td>";
+$design.="<td align=center  id=\"".$user."\" name=\"phone\" value=\"".$phone."\" >".$phone."</td>";
+$design.="<td align=center  name=\"summ\" id=\"totalSum".$user."\"></td>";
 $design.=" </tr>\r\n";
 }
 
-$design.="</table>";
+$design.="<tr><td>Σ</td><td  align=center id=\"Echat\"></td><td  align=center id=\"Eticket\"></td><td align=center  id=\"Ephone\"></td><td></td></table>";
 $endglobcount = microtime(true); $globduration = $endglobcount - $globcount;
 $design.= "generated $globduration<br>last update: ".date("Y-m-d H:i:s",$id);
-echo $design;
-$Cache_Lite->save($design);
+
+$designfull=$header.$js.$header2.$design;
+echo $designfull;
+
+$Cache_Lite->save($designfull);
 }
 $previd=$id-600;
 $Cache_Lite->remove($previd);
