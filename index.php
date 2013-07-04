@@ -80,8 +80,9 @@ else {
 $header= <<< EOH
 <html>
 <head>
-<script type="text/javascript" src="./js/jquery.min.js"></script>
-<script type="text/javascript" src="./js/jquery.calculation.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://www.pengoworks.com/workshop/jquery/field/jquery.field.js"></script>
+<script type="text/javascript" src="http://www.pengoworks.com/workshop/jquery/calculation/jquery.calculation.js"></script>
 <script type="text/javascript">
  function start()
  {
@@ -99,7 +100,13 @@ $("td[name=phone]").sum("keyup", "#Ephone");
 EOH;
 # <?php
 
-$header2= <<< EOH
+$header2="var a =[".$config['enabledID']."];";
+$header2.= <<< EOH
+
+for (id in a){
+ $("td[id='"+a[id]+"']").sum("keyup", "#totalSum"+a[id]);
+ }
+ 
 }
 </script>
 
@@ -115,8 +122,6 @@ foreach (explode(",", $config['enabledID']) as $user) {
 $chat=get_user_chat($user);
 $ticket=get_user_ticket($user);
 $phone=get_user_phone($user);
-
-$js.="$(\"td[id=".$user."]\").sum(\"keyup\", \"#totalSum".$user."\");\r\n";
 
 $design.="<tr><td>".get_user_info($user)."</td>";
 $design.="<td align=center id=\"".$user."\" name=\"chat\" value=\"".$chat."\" >".$chat."</td>";
